@@ -539,5 +539,5 @@ class GoBoard(object):
             while self.winner() == EMPTY and self.moveNumber() < 49:
                 self.play_move(allMoves[i], self.current_player)
                 i += 1
-            return self.winner(), i
+        return self.winner(), i
 

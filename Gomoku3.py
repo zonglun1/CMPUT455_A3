@@ -53,7 +53,7 @@ class Gomoku3():
         moveNr = state.moveNumber()
         for _ in range(self.numSimulations):
             winner, temp = state.simulate()
-            print(winner, temp)
+            # print(winner, temp)
             stats[winner] += 1
             state.resetToMoveNumber(moveNr)
         assert sum(stats) == self.numSimulations
@@ -65,6 +65,8 @@ class Gomoku3():
         return eval
 
     def genMove(self, state):
+        if (state.winner() != EMPTY or state.moveNumber() == 49):
+            return
         moves = state.legalMoves()
         color = state.current_player
         numMoves = len(moves)
@@ -90,7 +92,7 @@ def selectPlayer(numMoves, player1, player2):
 def playGame(player1, player2):
     t = GoBoard(7)
     numMoves = 0
-    while t.winner() == EMPTY and t.moveNumber() < 49:
+    while t.winner() == EMPTY and numMoves < 40:
         player = selectPlayer(numMoves, player1, player2)
         t.play_move(player.genMove(t), t.current_player)
         numMoves += 1
@@ -99,16 +101,17 @@ def playGame(player1, player2):
 
 def playMatch(player1, player2, numGames):
     stats = [0] * 3
-    for _ in range(numGames):
+    for index in range(numGames):
         winner = playGame(player1, player2)
         stats[winner] += 1
+        print(index)
     printstats(stats, player1, player2)
     return stats
 
 def printstats(stats, player1, player2):
     print("{0} wins for {1}, {2} wins for {3}, {4} draws".
-          format(stats[BLACK], player1.name(),
-                 stats[WHITE], player2.name(),
+          format(stats[BLACK],"black",
+                 stats[WHITE], "white",
                  stats[EMPTY]))
 
 def playMatchBothColors(player1, player2, numGames):
@@ -123,15 +126,15 @@ def playMatchBothColors(player1, player2, numGames):
     print("Total:")
     printstats(stats1, player1, player2)
     eval = (stats1[BLACK] + 0.5 * stats1[EMPTY]) / (2 * numGames)
-    print("Percentage for {0} = {1:.2f}".format(player1.name(), 100 * eval))
+    print("Percentage for {0} = {1:.2f}".format("black", 100 * eval))
 
 def run():
     """
     start the gtp connection and wait for commands.
     """
-    player1 = Gomoku3(1)
+    player1 = Gomoku3(10)
     player3 = RandomPlayer()
-    playMatchBothColors(player1, player3, 1)
+    playMatchBothColors(player1, player3, 5)
 
 
 if __name__ == "__main__":
